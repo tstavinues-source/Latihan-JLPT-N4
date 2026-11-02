@@ -21,6 +21,81 @@ const JEDA_SRS = [1, 3, 7]; // hari: salah → +1; benar ke-1 → +3; benar ke-2
 let sesi = null;
 let pewaktu = null;
 
+/* ---------- Kamus kosakata (popup arti, ala repo "lagi") ---------- */
+let KAMUS = null;
+let PANJANG_MAKS_KAMUS = 0;
+const LABEL_POS = { partikel:"Partikel", kerja:"Kata Kerja", benda:"Kata Benda",
+  "sifat-i":"Kata Sifat-i", "sifat-na":"Kata Sifat-na", lainnya:"Kosakata", bunpou:"Pola Bunpou" };
+let popupKamus = null;
+
+function anotasiTeks(teks){
+  if (!KAMUS || !teks) return teks;
+  let hasil = "", i = 0;
+  while (i < teks.length){
+    let cocok = null;
+    const maks = Math.min(PANJANG_MAKS_KAMUS, teks.length - i);
+    for (let len = maks; len >= 1; len--){
+      const pot = teks.substr(i, len);
+      if (KAMUS[pot]) { cocok = pot; break; }
+    }
+    if (cocok){
+      hasil += '<span class="vocab-word" data-k="' + cocok.replace(/"/g, "&quot;") + '">' + cocok + '</span>';
+      i += cocok.length;
+    } else { hasil += teks[i]; i++; }
+  }
+  return hasil;
+}
+function anotasiHTML(html){
+  if (!KAMUS || !html) return html;
+  return html.split(/(<[^>]*>)/g).map((bagian, idx) => idx % 2 === 1 ? bagian : anotasiTeks(bagian)).join("");
+}
+function pastikanPopup(){
+  if (popupKamus) return popupKamus;
+  popupKamus = document.createElement("div");
+  popupKamus.className = "vocab-popup";
+  document.body.appendChild(popupKamus);
+  return popupKamus;
+}
+function sembunyiPopup(){ if (popupKamus) popupKamus.classList.remove("tampil"); }
+function tampilPopup(kunci, rect){
+  const e = KAMUS && KAMUS[kunci];
+  if (!e) return;
+  const p = pastikanPopup();
+  p.innerHTML = '<button class="vp-close" type="button" aria-label="Tutup">✕</button>' +
+    '<div class="vp-word jp">' + kunci + '</div>' +
+    '<span class="vp-pos">' + (LABEL_POS[e.p] || "Kosakata") + '</span>' +
+    (e.b && e.b !== kunci ? '<div class="vp-base">Bentuk kamus: <b>' + e.b + '</b></div>' : '') +
+    '<div class="vp-id">' + e.i + '</div>';
+  p.classList.add("tampil");
+  const lebar = Math.min(280, window.innerWidth - 24);
+  p.style.width = lebar + "px";
+  p.style.left = Math.max(12, Math.min(rect.left, window.innerWidth - lebar - 12)) + "px";
+  const tinggi = p.offsetHeight || 120;
+  let atas = rect.bottom + 8;
+  if (atas + tinggi > window.innerHeight - 10) atas = Math.max(10, rect.top - tinggi - 8);
+  p.style.top = atas + "px";
+  p.querySelector(".vp-close").addEventListener("click", ev => { ev.stopPropagation(); sembunyiPopup(); });
+}
+document.addEventListener("click", ev => {
+  const kata = ev.target.closest ? ev.target.closest(".vocab-word") : null;
+  if (kata){
+    ev.preventDefault();
+    ev.stopPropagation();
+    tampilPopup(kata.dataset.k, kata.getBoundingClientRect());
+  } else if (popupKamus && !popupKamus.contains(ev.target)) sembunyiPopup();
+}, true);
+window.addEventListener("scroll", sembunyiPopup, true);
+window.addEventListener("resize", sembunyiPopup);
+function muatKamus(){
+  firebase.database().ref("latihan_jlpt_n4_kamus").once("value").then(snap => {
+    const data = snap.val();
+    if (!data) return;
+    KAMUS = data;
+    PANJANG_MAKS_KAMUS = Object.keys(KAMUS).reduce((m, k) => Math.max(m, k.length), 0);
+    if (sesi && !$("layar-kuis").classList.contains("tersembunyi")) gambarSoal();
+  }).catch(err => console.error("Kamus gagal dimuat", err));
+}
+
 function $(id){ return document.getElementById(id); }
 function acak(arr){
   const a = arr.slice();
@@ -227,14 +302,14 @@ function gambarSoal(){
     sesi.jenis === "lemah" ? "KATEGORI LEMAH" :
     sesi.jenis === "simulasi" ? "SIMULASI" : (sesi.mode === "acak" ? "ACAK" : "BERURUTAN");
   const teks = $("teks-soal");
-  teks.innerHTML = q.question;
+  teks.innerHTML = anotasiHTML(q.question);
   teks.classList.toggle("panjang", q.question.replace(/<[^>]*>/g,"").length > 190);
   const wadah = $("wadah-opsi");
   wadah.innerHTML = "";
   q.options.forEach((opsi, i) => {
     const b = document.createElement("button");
     b.className = "opsi";
-    b.innerHTML = '<span class="huruf">' + HURUF[i] + '</span><span>' + opsi + '</span>';
+    b.innerHTML = '<span class="huruf">' + HURUF[i] + '</span><span>' + (simulasi ? opsi : anotasiTeks(opsi)) + '</span>';
     b.addEventListener("click", () => jawab(b, q, opsi));
     wadah.appendChild(b);
   });
@@ -365,7 +440,7 @@ function gambarHasil(){
   $("wadah-ulasan").style.display = salahSaja.length ? "" : "none";
   $("btn-ulangi-salah").style.display = salahSaja.length ? "" : "none";
   $("daftar-ulasan").innerHTML = salahSaja.map(r =>
-    '<div class="ulasan"><div class="t jp">' + r.soal.question + '</div>' +
+    '<div class="ulasan"><div class="t jp">' + anotasiHTML(r.soal.question) + '</div>' +
     '<div class="jwb">Jawabanmu: <span class="s jp">' + r.dipilih + '</span></div>' +
     '<div class="jwb">Jawaban benar: <span class="b jp">' + r.soal.correctAnswer + '</span></div>' +
     '<div class="bahas">' + r.soal.explanation + '</div></div>'
@@ -417,3 +492,4 @@ function muatSoal(){
 }
 $("btn-muat-ulang").addEventListener("click", () => location.reload());
 muatSoal();
+muatKamus();

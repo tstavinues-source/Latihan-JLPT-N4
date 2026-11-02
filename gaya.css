@@ -318,3 +318,35 @@ html[data-tema="gelap"] .skel::after{background:linear-gradient(100deg,transpare
   .baris-kat{grid-template-columns:96px 1fr 40px}
   .skor-mini{margin-right:0}
 }
+
+/* ===== Kosakata popup (garis titik-titik, ala repo "lagi") ===== */
+.vocab-word{
+  border-bottom:2px dotted rgba(14,124,134,.65);cursor:pointer;border-radius:3px;padding:0 1px;
+  transition:background .15s ease;
+}
+.vocab-word:hover{background:rgba(14,124,134,.13)}
+html[data-tema="gelap"] .vocab-word{border-bottom-color:rgba(94,200,211,.7)}
+html[data-tema="gelap"] .vocab-word:hover{background:rgba(94,200,211,.15)}
+.vocab-popup{
+  position:fixed;z-index:9999;max-width:280px;min-width:200px;
+  background:var(--card);color:var(--ink);border:1px solid var(--border);border-radius:16px;
+  padding:14px 16px;box-shadow:0 16px 34px -12px rgba(16,24,40,.28);
+  opacity:0;transform:translateY(4px) scale(.98);pointer-events:none;
+  transition:opacity .15s ease,transform .15s ease;
+}
+.vocab-popup.tampil{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+.vocab-popup .vp-word{font-size:1.12rem;font-weight:700;color:var(--navy);margin-bottom:3px;padding-right:22px}
+html[data-tema="gelap"] .vocab-popup .vp-word{color:#9cc3e8}
+.vocab-popup .vp-pos{
+  display:inline-block;font-size:.62rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;
+  color:#0e7c86;background:rgba(14,124,134,.12);padding:2px 8px;border-radius:999px;margin-bottom:8px;
+}
+.vocab-popup .vp-base{font-size:.8rem;color:var(--soft);margin-bottom:5px}
+.vocab-popup .vp-base b{color:var(--ink)}
+.vocab-popup .vp-id{font-size:.88rem;line-height:1.55}
+.vocab-popup .vp-close{
+  position:absolute;top:8px;right:10px;width:22px;height:22px;border:0;border-radius:50%;
+  background:transparent;color:var(--faint);font-size:.8rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+}
+.vocab-popup .vp-close:hover{background:var(--navy-lembut);color:var(--ink)}
