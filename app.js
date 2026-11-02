@@ -125,25 +125,28 @@ function bangunMenu(){
   wadah.innerHTML = "";
   Object.keys(BANK).forEach(n => {
     const soal = BANK[n];
-    const perTipe = {};
-    soal.forEach(q => perTipe[q.type] = (perTipe[q.type]||0)+1);
+    const perAwalan = {};
+    soal.forEach(q => { const a = awalanTipe(q.type); perAwalan[a] = (perAwalan[a]||0)+1; });
     const terbaik = localStorage.getItem("n4r_terbaik_" + n);
     const kartu = document.createElement("div");
     kartu.className = "kartu-latihan";
     kartu.innerHTML =
-      '<div class="nomor-besar">' + n + '</div>' +
-      '<div class="isi-latihan">' +
-        '<h2>Latihan ' + n + '</h2>' +
-        '<div class="meta">Soal Ujian Tahun ' + TAHUN[n] + ' · ' + soal.length + ' soal</div>' +
-        '<div class="chip-baris">' +
-          Object.keys(perTipe).map(t => '<span class="chip kat-' + awalanTipe(t) + '"><span class="titik"></span>' + namaTipe(t) + ' <b>' + perTipe[t] + '</b></span>').join("") +
+      '<div class="hantu-nomor">' + String(n).padStart(2,"0") + '</div>' +
+      '<h2>Latihan ' + String(n).padStart(2,"0") + '</h2>' +
+      '<div class="meta">Ujian Tahun ' + TAHUN[n] + ' · ' + soal.length + ' soal</div>' +
+      '<div class="grid-kat">' +
+        ["Hiragana","Kanji","Kosakata","Grammar"].filter(a => perAwalan[a]).map(a =>
+          '<div class="sel"><div class="n">' + perAwalan[a] + '</div><div class="l">' + a + '</div></div>').join("") +
+      '</div>' +
+      (terbaik !== null ?
+        '<div class="terbaik"><div class="baris"><span>Skor terbaik</span><b>' + terbaik + '%</b></div>' +
+        '<div class="rel-terbaik"><i style="width:' + terbaik + '%"></i></div></div>' : '') +
+      '<div class="aksi-latihan">' +
+        '<button class="btn btn-blok" data-urut="' + n + '">Mulai Latihan <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg></button>' +
+        '<div class="dua-tombol">' +
+          '<button class="btn btn-sekunder" data-acak="' + n + '"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 3h5v5"/><path d="M4 20 21 3"/><path d="M21 16v5h-5"/><path d="m15 15 6 6"/><path d="M4 4l5 5"/></svg> Acak Soal</button>' +
+          '<button class="btn btn-sekunder" data-simulasi="' + n + '"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2.5 2.5"/><path d="M9 2h6"/></svg> Simulasi Ujian</button>' +
         '</div>' +
-        (terbaik !== null ? '<div class="terbaik">Skor terbaik: <span class="lencana">' + terbaik + '%</span></div>' : '') +
-        '<div class="tombol-baris">' +
-          '<button class="btn btn-putih" data-urut="' + n + '">Berurutan</button>' +
-          '<button class="btn" data-acak="' + n + '">Acak Soal</button>' +
-        '</div>' +
-        '<button class="btn btn-hitam btn-blok" data-simulasi="' + n + '">Simulasi Ujian (Berwaktu)</button>' +
       '</div>';
     wadah.appendChild(kartu);
   });

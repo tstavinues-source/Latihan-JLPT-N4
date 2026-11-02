@@ -1,10 +1,10 @@
 # Latihan JLPT N4 — Renshuu
 
-Aplikasi latihan soal JLPT N4 (tema "Buku Latihan Premium", mode terang + malam): 274 soal dari 5 set ujian asli (2014, 2016, 2017, 2018, 2021).
+Aplikasi latihan soal JLPT N4 (desain "Modern Learning Dashboard": bersih + sentuhan premium, mode terang + malam): 274 soal dari 5 set ujian asli (2014, 2016, 2017, 2018, 2021).
 
 ## Struktur
 - `index.html` — rangka halaman
-- `gaya.css` — tampilan premium (kertas washi, indigo, vermillion) + mode malam + warna khas per kategori soal
+- `gaya.css` — tampilan dashboard modern (abu muda, kartu putih, navy, progres hijau, Plus Jakarta Sans) + mode malam
 - `app.js` — logika kuis (skor, SRS, statistik, simulasi, suara, saklar tema)
 - Bank soal TIDAK ada di repo ini: soal dimuat dari Firebase Realtime Database (proyek `kas-ac289`, node `latihan_jlpt_n4`).
 
