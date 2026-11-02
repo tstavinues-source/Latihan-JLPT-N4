@@ -28,6 +28,7 @@ function acak(arr){
   return a;
 }
 function namaTipe(t){ return t.replace(/-/g," · "); }
+function awalanTipe(t){ return t.split("-")[0]; } // Hiragana | Kanji | Kosakata | Grammar — kunci warna kategori
 function tampil(id){
   ["layar-muat","layar-menu","layar-kuis","layar-hasil"].forEach(x => $(x).classList.toggle("tersembunyi", x !== id));
   window.scrollTo({top:0});
@@ -135,7 +136,7 @@ function bangunMenu(){
         '<h2>Latihan ' + n + '</h2>' +
         '<div class="meta">Soal Ujian Tahun ' + TAHUN[n] + ' · ' + soal.length + ' soal</div>' +
         '<div class="chip-baris">' +
-          Object.keys(perTipe).map(t => '<span class="chip">' + namaTipe(t) + ' <b>' + perTipe[t] + '</b></span>').join("") +
+          Object.keys(perTipe).map(t => '<span class="chip kat-' + awalanTipe(t) + '"><span class="titik"></span>' + namaTipe(t) + ' <b>' + perTipe[t] + '</b></span>').join("") +
         '</div>' +
         (terbaik !== null ? '<div class="terbaik">Skor terbaik: <span class="lencana">' + terbaik + '%</span></div>' : '') +
         '<div class="tombol-baris">' +
@@ -218,6 +219,7 @@ function gambarSoal(){
   $("skor-salah").textContent = sesi.salah;
   $("bilah-progres").style.width = (sesi.indeks / sesi.daftar.length * 100) + "%";
   $("tipe-soal").textContent = namaTipe(q.type).toUpperCase();
+  $("tipe-soal").className = "tipe kat-" + awalanTipe(q.type);
   $("mode-soal").textContent = sesi.jenis === "srs" ? "ULASAN SRS" :
     sesi.jenis === "lemah" ? "KATEGORI LEMAH" :
     sesi.jenis === "simulasi" ? "SIMULASI" : (sesi.mode === "acak" ? "ACAK" : "BERURUTAN");
@@ -352,7 +354,7 @@ function gambarHasil(){
   $("hasil-kategori").innerHTML = Object.keys(perTipe).map(t => {
     const v = perTipe[t], p = Math.round(v.b / v.t * 100);
     return '<div class="baris-kat"><span class="nama">' + namaTipe(t) + '</span>' +
-      '<span class="rel"><span class="isi-rel" style="display:block;width:' + p + '%"></span></span>' +
+      '<span class="rel kat-' + awalanTipe(t) + '"><span class="isi-rel" style="display:block;width:' + p + '%"></span></span>' +
       '<span class="angka">' + v.b + '/' + v.t + '</span></div>';
   }).join("");
   const salahSaja = sesi.riwayat.filter(r => !r.benar);
@@ -381,6 +383,15 @@ $("btn-ulangi-salah").addEventListener("click", () => {
   mulaiSesi({ jenis, latihan, sumber: daftar, acakSoal: modeAcak });
 });
 $("btn-menu-hasil").addEventListener("click", () => { sesi = null; bangunMenu(); tampil("layar-menu"); });
+
+/* ---------- Mode malam / terang ---------- */
+function pasangTema(m){
+  document.documentElement.dataset.tema = m;
+  try { localStorage.setItem("n4r_tema", m); } catch(e){}
+}
+document.querySelectorAll(".btn-tema").forEach(b => b.addEventListener("click", () => {
+  pasangTema(document.documentElement.dataset.tema === "gelap" ? "terang" : "gelap");
+}));
 
 /* ---------- Mulai: ambil soal dari Firebase ---------- */
 function muatSoal(){

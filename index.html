@@ -1,64 +1,97 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" data-tema="terang">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>JLPT N4 Renshuu — Latihan Soal</title>
+<script>try{document.documentElement.dataset.tema=localStorage.getItem("n4r_tema")||"terang";}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Archivo:wght@500;700;800&family=Noto+Sans+JP:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Archivo:wght@500;600;700;800&family=Noto+Sans+JP:wght@500;600;700&family=Shippori+Mincho+B1:wght@600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="gaya.css">
 </head>
 <body>
 <div class="bungkus">
 
-  <!-- ===== MENU ===== -->
+  <!-- ===== MUAT (SKELETON) ===== -->
   <section id="layar-muat">
-    <div class="kepala">
-      <span class="label">JLPT N4 · 日本語能力試験</span>
-      <h1>RENSHUU<br><span class="kuning">練習 soal N4</span></h1>
-      <p id="muat-teks">Mengambil soal dari Firebase…</p>
+    <div class="masthead mini">
+      <div class="brand-row">
+        <div class="segel">練</div>
+        <div>
+          <div class="eyebrow">JLPT N4 · 日本語能力試験</div>
+          <div class="brand-sub">Latihan mandiri yang terstruktur</div>
+        </div>
+      </div>
+      <h1>Renshuu <em>soal N4</em><span class="jp-title">練習</span></h1>
+      <p class="lead" id="muat-teks">Mengambil soal dari Firebase…</p>
+    </div>
+    <div class="skel-panel" aria-hidden="true">
+      <div class="skel baris pendek"></div>
+      <div class="skel rel"></div>
+      <div class="skel-grid"><div class="skel kotak"></div><div class="skel kotak"></div><div class="skel kotak"></div></div>
+    </div>
+    <div class="skel-panel" aria-hidden="true">
+      <div class="skel baris"></div>
+      <div class="skel baris pendek"></div>
+      <div class="skel baris"></div>
     </div>
     <button class="btn btn-blok tersembunyi" id="btn-muat-ulang">Coba Lagi</button>
   </section>
 
+  <!-- ===== MENU ===== -->
   <section id="layar-menu" class="tersembunyi">
-    <div class="kepala">
-      <span class="label">JLPT N4 · 日本語能力試験</span>
-      <h1>RENSHUU<br><span class="kuning">練習 soal N4</span></h1>
-      <p>274 soal dari 5 set ujian asli. Satu soal per layar, langsung dibahas. Ganbatte!</p>
+    <div class="masthead">
+      <div class="brand-row">
+        <div class="segel">練</div>
+        <div>
+          <div class="eyebrow">JLPT N4 · 日本語能力試験</div>
+          <div class="brand-sub">Latihan mandiri yang terstruktur</div>
+        </div>
+        <button class="btn-tema" type="button" aria-label="Ganti mode malam atau terang" title="Mode malam / terang">
+          <svg class="ikon-bulan" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13.2A8.2 8.2 0 0 1 10.8 4 8.5 8.5 0 1 0 20 13.2z"/></svg>
+          <svg class="ikon-matahari" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/></svg>
+        </button>
+      </div>
+      <h1>Renshuu <em>soal N4</em><span class="jp-title">練習</span></h1>
+      <p class="lead">274 soal dari 5 set ujian asli. Satu soal per layar, langsung dibahas. Ganbatte!</p>
+      <div class="meta-row">
+        <span class="meta-chip"><b>5</b> set ujian</span>
+        <span class="meta-chip"><b>274</b> soal</span>
+        <span class="meta-chip">Pembahasan langsung</span>
+      </div>
     </div>
 
     <div class="panel" id="panel-hari-ini">
-      <h3>HARI INI</h3>
-      <div style="font-weight:700; font-size:.92rem;">Target: <span id="target-teks">0 / 10 soal</span></div>
+      <div class="panel-head"><h3>Hari Ini</h3><span class="kecil">Target harian</span></div>
+      <div class="target-row"><span>Target belajar</span><span class="nilai" id="target-teks">0 / 10 soal</span></div>
       <div class="rel-target"><div class="isi" id="target-rel" style="width:0%"></div></div>
       <div class="baris-stat">
-        <div class="ubin"><div class="angka" id="ubin-streak">0</div><div class="ket">HARI BERUNTUN</div></div>
-        <div class="ubin"><div class="angka" id="ubin-total">0</div><div class="ket">SOAL DIJAWAB</div></div>
-        <div class="ubin"><div class="angka" id="ubin-akurasi">–</div><div class="ket">AKURASI TOTAL</div></div>
+        <div class="ubin"><div class="angka" id="ubin-streak">0</div><div class="ket">Hari Beruntun</div></div>
+        <div class="ubin"><div class="angka" id="ubin-total">0</div><div class="ket">Soal Dijawab</div></div>
+        <div class="ubin"><div class="angka" id="ubin-akurasi">–</div><div class="ket">Akurasi Total</div></div>
       </div>
     </div>
 
-    <div class="panel kuning tersembunyi" id="panel-lanjut">
-      <h3>SESI TERAKHIR BELUM SELESAI</h3>
-      <div style="font-weight:700; font-size:.95rem;" id="lanjut-teks"></div>
+    <div class="panel sesi tersembunyi" id="panel-lanjut">
+      <div class="panel-head"><h3>Sesi Terakhir Belum Selesai</h3><span class="kecil">Tersimpan</span></div>
+      <p class="teks-panel" id="lanjut-teks"></p>
       <div class="tombol-baris">
-        <button class="btn" id="btn-lanjutkan">Lanjutkan →</button>
-        <button class="btn btn-putih" id="btn-buang-sesi">Buang</button>
+        <button class="btn btn-aksen" id="btn-lanjutkan">Lanjutkan →</button>
+        <button class="btn btn-sekunder" id="btn-buang-sesi">Buang</button>
       </div>
     </div>
 
-    <div class="panel biru tersembunyi" id="panel-srs">
-      <h3>PENGULANGAN TERJADWAL (SOAL SALAH)</h3>
-      <div style="font-weight:700; font-size:.95rem;" id="srs-teks"></div>
-      <button class="btn btn-hitam btn-blok" id="btn-srs">Mulai Ulasan</button>
+    <div class="panel srs tersembunyi" id="panel-srs">
+      <div class="panel-head"><h3>Pengulangan Terjadwal (Soal Salah)</h3><span class="kecil">Ulasan SRS</span></div>
+      <p class="teks-panel" id="srs-teks"></p>
+      <button class="btn btn-gelap btn-blok" id="btn-srs">Mulai Ulasan</button>
     </div>
 
-    <div class="panel tersembunyi" id="panel-lemah">
-      <h3>LATIHAN KATEGORI LEMAH</h3>
-      <div style="font-weight:700; font-size:.95rem;" id="lemah-teks"></div>
-      <button class="btn btn-biru btn-blok" id="btn-lemah">Racik Set Lemah</button>
+    <div class="panel lemah tersembunyi" id="panel-lemah">
+      <div class="panel-head"><h3>Latihan Kategori Lemah</h3><span class="kecil">Fokus</span></div>
+      <p class="teks-panel" id="lemah-teks"></p>
+      <button class="btn btn-sekunder btn-blok" id="btn-lemah">Racik Set Lemah</button>
     </div>
 
     <div id="daftar-latihan"></div>
@@ -68,19 +101,26 @@
   <!-- ===== KUIS ===== -->
   <section id="layar-kuis" class="tersembunyi">
     <div class="baris-atas">
-      <button class="btn btn-putih btn-kecil" id="btn-menu-kuis">← Menu</button>
+      <button class="btn btn-sekunder btn-kecil" id="btn-menu-kuis">← Menu</button>
       <div class="skor-mini" id="skor-mini">
         <span class="b">✓ <span id="skor-benar">0</span></span>
         <span class="s">✗ <span id="skor-salah">0</span></span>
       </div>
       <div class="info-soal info-waktu tersembunyi" id="info-waktu">60:00</div>
       <div class="info-soal" id="info-soal">Soal 1 / 55</div>
+      <button class="btn-tema kecil" type="button" aria-label="Ganti mode malam atau terang" title="Mode malam / terang">
+        <svg class="ikon-bulan" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13.2A8.2 8.2 0 0 1 10.8 4 8.5 8.5 0 1 0 20 13.2z"/></svg>
+        <svg class="ikon-matahari" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/></svg>
+      </button>
     </div>
     <div class="wadah-progres"><div id="bilah-progres"></div></div>
     <div class="kartu-soal">
       <span class="tipe" id="tipe-soal">Hiragana</span><span class="mode" id="mode-soal">BERURUTAN</span>
       <div class="teks-soal jp" id="teks-soal"></div>
-      <button class="btn btn-putih btn-kecil btn-dengar" id="btn-dengar">Dengarkan Soal</button>
+      <button class="btn btn-sekunder btn-kecil btn-dengar" id="btn-dengar">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.4 5.6a9 9 0 0 1 0 12.8"/></svg>
+        Dengarkan Soal
+      </button>
     </div>
     <div class="pilihan" id="wadah-opsi"></div>
     <div class="kartu-bahas tersembunyi" id="kartu-bahas">
@@ -94,22 +134,28 @@
 
   <!-- ===== HASIL ===== -->
   <section id="layar-hasil" class="tersembunyi">
+    <div class="baris-atas kanan">
+      <button class="btn-tema kecil" type="button" aria-label="Ganti mode malam atau terang" title="Mode malam / terang">
+        <svg class="ikon-bulan" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 13.2A8.2 8.2 0 0 1 10.8 4 8.5 8.5 0 1 0 20 13.2z"/></svg>
+        <svg class="ikon-matahari" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5 5l1.7 1.7M17.3 17.3 19 19M19 5l-1.7 1.7M6.7 17.3 5 19"/></svg>
+      </button>
+    </div>
     <div class="kartu-skor">
       <div class="persen" id="hasil-persen">0%</div>
       <div class="rincian" id="hasil-rincian">Benar 0 dari 0 soal</div>
       <div class="pesan" id="hasil-pesan"></div>
     </div>
     <div class="kartu-putih">
-      <h3>PER KATEGORI</h3>
+      <div class="panel-head"><h3>Per Kategori</h3><span class="kecil">Hasil sesi</span></div>
       <div id="hasil-kategori"></div>
     </div>
     <div class="kartu-putih" id="wadah-ulasan">
-      <h3>ULASAN SOAL YANG SALAH (<span id="jumlah-salah">0</span>)</h3>
+      <div class="panel-head"><h3>Ulasan Soal yang Salah (<span id="jumlah-salah">0</span>)</h3><span class="kecil">Pembahasan</span></div>
       <div id="daftar-ulasan"></div>
     </div>
-    <button class="btn btn-hijau btn-blok" id="btn-ulangi-salah">Ulangi yang Salah Saja</button>
+    <button class="btn btn-aksen btn-blok" id="btn-ulangi-salah">Ulangi yang Salah Saja</button>
     <button class="btn btn-blok" id="btn-ulangi">Ulangi Sesi Ini</button>
-    <button class="btn btn-putih btn-blok" id="btn-menu-hasil">Menu Utama</button>
+    <button class="btn btn-sekunder btn-blok" id="btn-menu-hasil">Menu Utama</button>
   </section>
 
 </div>
