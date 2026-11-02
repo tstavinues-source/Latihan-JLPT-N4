@@ -267,21 +267,27 @@ function bangunMenu(){
           Object.keys(perTipe).map(t => '<span class="chip">' + namaTipe(t) + ' <b>' + perTipe[t] + '</b></span>').join("") +
         '</div>' +
         (terbaik !== null ? '<div class="terbaik">Skor terbaik: <span class="lencana">' + terbaik + '%</span></div>' : '') +
-        '<button class="btn btn-blok" data-mulai="' + n + '">Mulai Latihan →</button>' +
+        '<div style="display:flex; gap:10px; margin-top:14px;">' +
+          '<button class="btn btn-putih" style="flex:1;" data-mulai-urut="' + n + '">Berurutan</button>' +
+          '<button class="btn" style="flex:1;" data-mulai-acak="' + n + '">Acak Soal</button>' +
+        '</div>' +
       '</div>';
     wadah.appendChild(kartu);
   });
-  wadah.querySelectorAll("[data-mulai]").forEach(b =>
-    b.addEventListener("click", () => mulaiLatihan(Number(b.dataset.mulai), BANK[b.dataset.mulai])));
+  wadah.querySelectorAll("[data-mulai-urut]").forEach(b =>
+    b.addEventListener("click", () => mulaiLatihan(Number(b.dataset.mulaiUrut), BANK[b.dataset.mulaiUrut], false)));
+  wadah.querySelectorAll("[data-mulai-acak]").forEach(b =>
+    b.addEventListener("click", () => mulaiLatihan(Number(b.dataset.mulaiAcak), BANK[b.dataset.mulaiAcak], true)));
 }
 
 /* ---------- Kuis ---------- */
-function mulaiLatihan(nomor, daftarMentah){
-  const daftar = daftarMentah.map(q => ({
+function mulaiLatihan(nomor, daftarMentah, acakSoal){
+  const sumber = acakSoal ? acak(daftarMentah) : daftarMentah;
+  const daftar = sumber.map(q => ({
     type: q.type, question: q.question, explanation: q.explanation,
     correctAnswer: q.correctAnswer, options: acak(q.options)
   }));
-  sesi = { latihan: nomor, daftar, indeks: 0, benar: 0, salah: 0, riwayat: [] };
+  sesi = { latihan: nomor, mode: acakSoal ? "acak" : "urut", daftar, indeks: 0, benar: 0, salah: 0, riwayat: [] };
   tampil("layar-kuis");
   gambarSoal();
 }
@@ -348,7 +354,7 @@ function gambarHasil(){
   const lama = Number(localStorage.getItem(kunci) || -1);
   if (persen > lama) localStorage.setItem(kunci, String(persen));
   $("hasil-persen").textContent = persen + "%";
-  $("hasil-rincian").textContent = "Benar " + sesi.benar + " dari " + total + " soal · Latihan " + sesi.latihan + " (Ujian " + TAHUN[sesi.latihan] + ")";
+  $("hasil-rincian").textContent = "Benar " + sesi.benar + " dari " + total + " soal · Latihan " + sesi.latihan + " (Ujian " + TAHUN[sesi.latihan] + ") · Mode " + (sesi.mode === "acak" ? "Acak" : "Berurutan");
   $("hasil-pesan").textContent =
     persen >= 90 ? "Sugoi! Sudah sangat siap untuk N4." :
     persen >= 75 ? "Kerja bagus! Sedikit lagi menuju sempurna." :
@@ -380,18 +386,18 @@ function gambarHasil(){
   tampil("layar-hasil");
 }
 
-$("btn-ulangi").addEventListener("click", () => mulaiLatihan(sesi.latihan, BANK[sesi.latihan]));
+$("btn-ulangi").addEventListener("click", () => mulaiLatihan(sesi.latihan, BANK[sesi.latihan], sesi.mode === "acak"));
 $("btn-ulangi-salah").addEventListener("click", () => {
   const nomor = sesi.latihan;
   const daftar = sesi.riwayat.filter(r => !r.benar).map(r => r.soal);
-  mulaiLatihan(nomor, daftar);
+  mulaiLatihan(nomor, daftar, sesi.mode === "acak");
 });
 $("btn-menu-hasil").addEventListener("click", () => { sesi = null; bangunMenu(); tampil("layar-menu"); });
 
 /* ---------- Mulai ---------- */
 bangunMenu();
 const param = new URLSearchParams(location.search).get("mulai");
-if (param && BANK[param]) mulaiLatihan(Number(param), BANK[param]);
+if (param && BANK[param]) mulaiLatihan(Number(param), BANK[param], false);
 </script>
 </body>
 </html>
